@@ -59,24 +59,56 @@
 
 // experiment of tRPC with Server component.
 
-import React, { Suspense } from "react";
-import { getQueryClient, trpc } from "@/trpc/server";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+// import React, { Suspense } from "react";
+// import { getQueryClient, trpc } from "@/trpc/server";
+// import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { Client } from "./client";
+// import { Client } from "./client";
 
-const page = async () => {
-  const queryClient = getQueryClient();
-  void queryClient.fetchQuery(
-    trpc.createdAt.queryOptions({ text: "Prefetch server" }),
+// const page = async () => {
+//   const queryClient = getQueryClient();
+//   void queryClient.fetchQuery(
+//     trpc.createdAt.queryOptions({ text: "Prefetch server" }),
+//   );
+//   return (
+//     <div>
+//       <HydrationBoundary state={dehydrate(queryClient)}>
+//         <Suspense fallback={<p>Loading...</p>}>
+//           <Client />
+//         </Suspense>
+//       </HydrationBoundary>
+//     </div>
+//   );
+// };
+
+// export default page;
+
+// page.tsx from inngest
+"use client";
+import { toast } from "sonner";
+import { useTRPC } from "@/trpc/client";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import React from "react";
+
+const page = () => {
+  const trpc = useTRPC();
+  const invoke = useMutation(
+    trpc.invoke.mutationOptions({
+      onSuccess: () => {
+        toast.success("Backgroung Job Started");
+      },
+    }),
   );
   return (
-    <div>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <Client />
-        </Suspense>
-      </HydrationBoundary>
+    <div className="px-4 max-w-7xl mx-auto">
+      <Button
+        disabled={invoke.isPending}
+        onClick={() => invoke.mutate({ text: "LALmani" })}
+      >
+        {" "}
+        Tnvoke Background Jobs{" "}
+      </Button>
     </div>
   );
 };
